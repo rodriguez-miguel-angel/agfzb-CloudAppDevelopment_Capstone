@@ -10,14 +10,15 @@ urlpatterns = [
     # name the URL
 
     # path for about view
-
+    path('about/', views.about, name='about'),
     # path for contact us view
-
-    # path for registration
-
-    # path for login
-
-    # path for logout
+    path('contact/', views.contact, name='contact'),
+    # path for registration [sectionauthor:: Coursera. IBM. Course-09. Module-05.]
+    path('registration/', views.registration_request, name='registration'),
+    # path for login [sectionauthor:: Coursera. IBM. Course-09. Module-05.]
+    path('login/', views.login_request, name='login'),
+    # path for logout [sectionauthor:: Coursera. IBM. Course-09. Module-05.] 
+    path('logout/', views.logout_request, name='logout'),
 
     path(route='', view=views.get_dealerships, name='index'),
 
