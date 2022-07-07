@@ -9,8 +9,19 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+
 import os
 from pathlib import Path
+
+#from dotenv import load_dotenv
+
+#load_dotenv()
+
+#HOST = os.getenv("HOST")
+HOST="ca-north"
+
+#DOMAIN = os.getenv("DOMAIN")
+DOMAIN="us-south.cf.appdomain.cloud"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +38,7 @@ DEBUG = True
 
 APPEND_SLASH = True
 
-ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = ["localhost", "${HOST}.${DOMAIN}", "ca-north.us-south.cf.appdomain.cloud"]
 
 
 # Application definition
