@@ -113,12 +113,9 @@ class CarModel(models.Model):
                "Year: " + str(self.year)
 
     
-
 '''
+version-01:
 
-a plain Python class `CarDealer` to hold dealer data
-
-'''
 # CarDealer model
 class CarDealer(models.Model):
     full_name = models.CharField(max_length=200, default="full_name")
@@ -145,9 +142,45 @@ class CarDealer(models.Model):
 
 
 '''
-a plain Python class `DealerReview` to hold review data
+
+
 
 '''
+version-02: a plain Python class `CarDealer` to hold dealer data
+
+'''
+class CarDealer:
+
+    def __init__(self, address, city, full_name, id, lat, long, short_name, st, state, zip):
+        # Dealer address
+        self.address = address
+        # Dealer city
+        self.city = city
+        # Dealer Full Name
+        self.full_name = full_name
+        # Dealer id
+        self.id = id
+        # Location lat
+        self.lat = lat
+        # Location long
+        self.long = long
+        # Dealer short name
+        self.short_name = short_name
+        # Dealer state (Abbreviated Name)
+        self.st = st
+        # Dealer state (Full Name)
+        self.state = state
+        # Dealer zip
+        self.zip = zip
+
+    def __str__(self):
+        return "Dealer name: " + self.full_name    
+
+
+
+'''
+version-01: 
+
 # DealerReview model
 class DealerReview(models.Model):
     dealership = models.ForeignKey(CarDealer, on_delete=models.CASCADE) # dealer_id
@@ -170,3 +203,12 @@ class DealerReview(models.Model):
                 "Car Make: " + self.car_make + "," + \
                 "Car Model: " + self.car_model + "," + \
                 "Car Year: " + self.car_year
+
+'''
+
+
+
+'''
+version-02: a plain Python class `DealerReview` to hold review data
+
+'''
