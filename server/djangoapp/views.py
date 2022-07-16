@@ -147,7 +147,7 @@ def add_review(request, dealer_id):
             '''
             review = dict()
             review["time"] = datetime.utcnow().isoformat()
-            review["dealership"] = request.POST['dealership']
+            review["dealership"] = dealer_id
             review["review"] = request.POST['review']
 
             review["name"] = request.POST['name']
