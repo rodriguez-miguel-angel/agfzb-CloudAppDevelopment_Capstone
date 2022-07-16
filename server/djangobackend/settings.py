@@ -136,3 +136,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(STATIC_ROOT, 'media')
 MEDIA_URL = '/media/'
+
+SENTIMENT_API_KEY='MOC6YNcKV-xSIprjCt-l5D4BVMeMtip1HwyU2KHYIbMO'
+SENTIMENT_API_URL='https://api.us-south.natural-language-understanding.watson.cloud.ibm.com/instances/2471badd-faf9-44d2-8262-21a3e3e21244'

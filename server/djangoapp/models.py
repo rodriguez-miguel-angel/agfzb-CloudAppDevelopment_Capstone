@@ -176,8 +176,6 @@ class CarDealer:
     def __str__(self):
         return "Dealer name: " + self.full_name    
 
-
-
 '''
 version-01: 
 
@@ -212,3 +210,30 @@ class DealerReview(models.Model):
 version-02: a plain Python class `DealerReview` to hold review data
 
 '''
+# DealerReview model
+class DealerReview:
+    def __init__(self, dealership, name, review, purchase, purchase_date, car_make, car_model, car_year, sentiment, id):
+        # DealerReview dealership 
+        self.dealership = dealership
+        # DealerReview name
+        self.name = name
+        # DealerReview review
+        self.review = review
+        # DealerReview purchase
+        self.purchase = purchase
+        # DealerReview purchase_date
+        self.purchase_date = purchase_date
+        # DealerReview car_make
+        self.car_make = car_make
+        # DealerReview car_model
+        self.car_model = car_model
+        # DealerReview car_year
+        self.car_year = car_year
+        # DealerReview sentiment
+        self.sentiment = sentiment
+        # DealerReview id
+        self.id = id
+
+    def __str__(self):
+        return "DealerReview Name: " + self.name + "," + \
+            "DealerReview review: " + self.review 

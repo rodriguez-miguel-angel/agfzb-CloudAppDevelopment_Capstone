@@ -54,6 +54,33 @@
     </nav>
     
     <!--Add a dealer table here -->
+    <div class="container">
+
+        <h2>Best Cars</h2>
+        <table class="table table-hover">
+            <caption>This table includes the full name and the physical address of dealerships.</caption>
+            <thead>
+                <tr>
+                    <th>Dealership</th>
+                    <th>Physical address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#%  version one: %#}
+                {% csrf_token %}
+                {% for dealership in list_of_dealerships %}
+                <tr>
+                    <td>{{dealership.full_name}}</td>
+                    <td>{{dealership.address}}, {{dealership.city}}, {{dealership.st}} {{dealership.zip}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+
+
 
     </body>
 
