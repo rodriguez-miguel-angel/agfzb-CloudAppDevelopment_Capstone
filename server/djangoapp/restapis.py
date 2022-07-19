@@ -4,7 +4,7 @@ import json
 
 from ibm_watson import NaturalLanguageUnderstandingV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from ibm_watson.natural_language_understanding_v1 import Features,SentimentOptions
+from ibm_watson.natural_language_understanding_v1 import Features, SentimentOptions, EntitiesOptions, KeywordsOptions
 
 # import related models here
 from .models import CarDealer, DealerReview
@@ -124,7 +124,8 @@ def get_dealer_by_id(url, dealer_id):
         # Get its content in `doc` object
         dealer_doc = dealer["doc"]
 
-        print("dealer_doc", dealer_doc)
+        print("dealer_doc:")
+        print(dealer_doc)
 
         # Create a CarDealer object with values in `doc` object
         dealer_obj = CarDealer(address=dealer_doc["address"], city=dealer_doc["city"], full_name=dealer_doc["full_name"],
@@ -132,6 +133,9 @@ def get_dealer_by_id(url, dealer_id):
                                    short_name=dealer_doc["short_name"], st=dealer_doc["st"], state=dealer_doc["state"],
                                    zip=dealer_doc["zip"])
         
+        print("dealer_obj:")
+        print(dealer_obj)
+
         result.append(dealer_obj)
 
     return result
@@ -161,12 +165,13 @@ def get_dealer_reviews_from_cf(url, **kwargs):
         for review in reviews:
             # Get its content in review object
             # That is, create a CarDealer object with values in review object
-            review_obj = DealerReview(dealership=review["dealership"], name=review["name"], review=review["review"],
-                                purchase=review["purchase"], purchase_date=review["purchase_date"], car_make=review["car_make"],
-                                car_model=review["car_model"], car_year=review["car_year"], sentiment=review["sentiment"],
-                                id=review["id"])
-            
-            ...
+            review_obj = DealerReview(
+                dealership=review["dealership"], name=review["name"], review=review["review"],
+                purchase=review["purchase"], purchase_date=review["purchase_date"], car_make=review["car_make"],
+                car_model=review["car_model"], car_year=review["car_year"], 
+                sentiment=analyze_review_sentiments(review["review"]), id=review["id"])
+
+
             review_obj.sentiment = analyze_review_sentiments(review_obj.review)
     
             results.append(review_obj)
@@ -196,17 +201,31 @@ def analyze_review_sentiments(dealer_review):
 
     natural_language_understanding.set_service_url(api_url)
 
+    '''
+    version-01:
+    .. sectionauthor:: Coursera. IBM. Course-06. Module-05.
+    .. sectionauthor:: https://cloud.ibm.com/apidocs/natural-language-understanding?code=python#analyze
+
+        response = natural_language_understanding.analyze(
+        text=dealer_review,
+        features=Features(
+        entities=EntitiesOptions(emotion=True, sentiment=True, limit=2),
+        keywords=KeywordsOptions(emotion=True, sentiment=True,
+                                 limit=2))).get_result()
+    '''
     response = natural_language_understanding.analyze(
         text=dealer_review,
         features=Features(
-            sentiment=SentimentOptions(emotion=True, sentiment=True, limit=2))).get_result()
+        sentiment=SentimentOptions(),
+        entities=EntitiesOptions(emotion=True, sentiment=True, limit=2),
+        keywords=KeywordsOptions(emotion=True, sentiment=True, limit=2)))
+        
 
+    sentiment_result = response.result['sentiment']
+    
+    sentiment = sentiment_result['document']['label']
 
-    sentiment_result = json.dumps(response, indent=2)
-
-    print("analyze_review_sentiments[restapis]:", sentiment_result)
-
-    return sentiment_result
+    return sentiment
 
 def post_request(url, json_payload, **kwargs):
     print("kwargs [post_request]", kwargs)

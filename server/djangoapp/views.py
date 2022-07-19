@@ -3,10 +3,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-
+from .models import CarModel
 # from .restapis import related methods
 from .restapis import get_dealers_from_cf, get_dealer_by_id, get_dealer_reviews_from_cf, post_request
 
+from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -105,7 +106,7 @@ def get_dealerships(request):
         url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/dealership"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
-        context['list_of_dealerships'] = dealerships
+        context['dealership_list'] = dealerships
         # Return a list of dealerships
         return render(request, 'djangoapp/index.html', context)
 
@@ -124,7 +125,7 @@ def get_dealer_details(request, dealer_id):
 
         # Get reviews from the dealer
         reviews = get_dealer_reviews_from_cf(review_url, dealer_id=dealer_id)
-        context['list_of_reviews'] = reviews
+        context['review_list'] = reviews
         # Return a list of reviews
         return render(request, 'djangoapp/dealer_details.html', context)    
 
@@ -137,7 +138,21 @@ def add_review(request, dealer_id):
     # Get user object, then check if user is authenticated because only authenticated users can post reviews for a dealer
     user = request.user
     if(user.is_authenticated):
-        if request.method == "POST":
+        if request.method == "GET" :
+            #url = "your-cloud-function-domain/dealerships/dealer-get"
+            dealer_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/dealership"
+            dealer = get_dealer_by_id(dealer_url, dealer_id)
+            context['dealership'] = dealer
+            cars = CarModel.objects.all()
+            
+            print("cars",cars)
+            # car = get_object_or_404(CarModel, pk=car_id)
+            
+            context['cars'] = cars
+
+            return render(request, 'djangoapp/add_review.html', context)
+
+        elif request.method == "POST":
             #url = "your-cloud-function-domain/dealerships/dealer-get"
             review_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/review"
             # Get json payload from the request
@@ -145,7 +160,7 @@ def add_review(request, dealer_id):
             Create a dictionary object called review to append keys like (time, name, dealership, review, purchase). 
             And any attributes you defined in your review-post cloud function.
             '''
-            review = dict()
+            review = {}
             review["time"] = datetime.utcnow().isoformat()
             review["dealership"] = dealer_id
             review["review"] = request.POST['review']
@@ -166,16 +181,19 @@ def add_review(request, dealer_id):
             Create another dictionary object called json_payload with one key called review. 
             The json_payload will be used as the request body.
             '''
-            json_payload = dict()
+            json_payload = {}
             json_payload["review"] = review
 
             result = post_request(review_url, json_payload, dealer_id=dealer_id)
 
-            print(result)
+            print("add_review[views.py]: ", result)
             context['result'] = result
             context['message'] = "Success: Review added."
-            return render(request, 'djangoapp/add_review.html', context)
-
+            #return redirect(request, 'djangoapp/dealer_details.html', context)
+            #return HttpResponseRedirect(reverse(viewname='djangoapp:dealer_details.html', args=(dealer_id)))
+            #return redirect(request, 'djangoapp/dealer_details.html', context)
+            # Redirect to dealer_details with the dealer id
+            return HttpResponseRedirect(reverse(viewname='djangoapp:dealer_details.html', args=(dealer_id, dealer.id)))
     else:
         '''
         version-01:
@@ -186,6 +204,6 @@ def add_review(request, dealer_id):
         version-02:
         '''
         context['message'] = "Error: User is unauthenticated."
-        return render(request, 'djangoapp/add_review.html', context)
+        return redirect(request, 'djangoapp/dealer_details.html', context)
         
         
