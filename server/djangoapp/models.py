@@ -11,6 +11,7 @@ except Exception:
     print("There was an error loading django modules. Do you have django installed?")
     sys.exit()
 
+import json
 
 # Create your models here.
 
@@ -26,8 +27,7 @@ class CarMake(models.Model):
     description = models.CharField(max_length=1000)
 
     def __str__(self):
-        return "Name: " + self.name + "," + \
-               "Description: " + self.description
+        return f"Name: {self.name}. Description: {self.description}."
 
 # <HINT> Create a Car Model model `class CarModel(models.Model):`:
 # - Many-To-One relationship to Car Make model (One Car Make has many Car Models, using ForeignKey field)
@@ -107,10 +107,17 @@ class CarModel(models.Model):
     '''
     
     def __str__(self):
+        '''
+        version-01:
         return "Dealer Id: " + str(self.dealer_id) + "," + \
                "Name: " + self.name + "," + \
                "Type: " + self.type + "," + \
                "Year: " + str(self.year)
+        '''
+        '''
+        version-02:
+        '''
+        return f"Dealer Id: {self.dealer_id}. Name: {self.name}. Type: {self.type}. Year: {self.year}."
 
     
 '''
@@ -150,7 +157,6 @@ version-02: a plain Python class `CarDealer` to hold dealer data
 
 '''
 class CarDealer:
-
     def __init__(self, address, city, full_name, id, lat, long, short_name, st, state, zip):
         # Dealer address
         self.address = address
@@ -173,8 +179,31 @@ class CarDealer:
         # Dealer zip
         self.zip = zip
 
+    '''
+    version-09:
+    def __getitem__(self, key):
+        return self._values[key]
+
+    def __setitem__(self, key, value):
+        self._values[key] = value
+    '''
+    
+
     def __str__(self):
-        return "Dealer name: " + self.full_name    
+        '''
+        version-01:
+        return "Dealer name: " + self.full_name
+        '''
+        '''
+        version-02:
+        output = "Dealer name: {full_name}. Dealer state (Abbreviated Name): {st}.".format(full_name = self.full_name, st = self.st)
+        return output
+        '''
+        '''
+        version-03:
+        '''
+        return f"Dealer name: {self.full_name}. Dealer id: {self.id}. Dealer state (Abbreviated Name): {self.st}."
+    
 
 '''
 version-01: 
@@ -212,7 +241,10 @@ version-02: a plain Python class `DealerReview` to hold review data
 '''
 # DealerReview model
 class DealerReview:
-    def __init__(self, dealership, name, review, purchase, purchase_date, car_make, car_model, car_year, sentiment, id):
+    def __init__(self, dealership, name, review, purchase, purchase_date="", car_make="", car_model="", car_year="", sentiment="", id=""):
+        '''
+        Required attributes
+        '''
         # DealerReview dealership 
         self.dealership = dealership
         # DealerReview name
@@ -221,19 +253,37 @@ class DealerReview:
         self.review = review
         # DealerReview purchase
         self.purchase = purchase
+        '''
+        Optional attributes
+        '''
         # DealerReview purchase_date
         self.purchase_date = purchase_date
-        # DealerReview car_make
+        # DealerReview car_make   
         self.car_make = car_make
         # DealerReview car_model
         self.car_model = car_model
         # DealerReview car_year
         self.car_year = car_year
+        
         # DealerReview sentiment
         self.sentiment = sentiment
         # DealerReview id
         self.id = id
 
     def __str__(self):
+        '''
+        version-01:
         return "DealerReview Name: " + self.name + "," + \
-            "DealerReview review: " + self.review 
+            "DealerReview review: " + self.review
+        '''
+        '''
+        version-02:
+        output = "DealerReview Name: {name}. DealerReview review: {review}. DealerReview purchase: {purchase}".format(
+            name = self.name, review = self.review, purchase = self.purchase)
+        return output
+        '''
+        '''
+        version-03:
+        '''
+        return f"DealerReview Name: {self.name}. DealerReview review: {self.review}. DealerReview purchase: {self.purchase}"
+

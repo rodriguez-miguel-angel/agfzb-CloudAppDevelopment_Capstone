@@ -8,7 +8,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
-
+    <title>Add Review</title>
 </head>
 <body>
     <!-- Navigation bar [original-author: Coursera. IBM. Course-09. Module-05.]    -->
@@ -48,30 +48,39 @@
         </div>
     </nav>
     <!--Add review form here -->
-    <div id="submission" class="collapse">
+    <div class="container-fluid" id="submission">
             
         {% if user.is_authenticated %}
-        <h2>Write a review about dealership.full_name</h2>
+        <h2>Write a review about {{dealership.full_name}}</h2>
         <form id="reviewForm" action="{% url 'djangoapp:add_review' dealership.id %}" method="post">
-            <!-- Receive review content.  -->
-            <label>Enter review:</label>>
-            <textarea class="form-control" id="content" name="content" rows="2" required></textarea> 
-            <!-- Confirm if user purchased car from dealership-->
-            <label>Purchase</label>
-            <input class="form-check-input" type="checkbox" name="purchasedVehicle" id="purchasedVehicle" onclick="isChecked()"> 
-            <label>Select purchased vehicle information below:</label>
-            <div id="purchasedInfo">
-                <!-- Ask user select a car sold by this dealer. -->
-                <label>Select vehicle (manufacturer-model-year):</label>
-                <select name="car" id="car" class="form-select" purchasedCheck.checked required>
-                    {% for car in cars %}
-                        <option selected value={{car.id}}>{{car.name}}-{{car.make.name}}-{{ car.year|date:"Y" }}</option>
-                    {% endfor %}
-                </select>
-
-                <!--  -->
-                <input class="date-own form-control" type="text" name="purchaseDate" id="purchaseDate">
+            {% csrf_token %}
+            <!-- Mandatory field. Receive review content.  -->
+            <div class="form-group"> 
+                <label for="content">Review:</label>
+                <textarea class="form-control" id="content" name="content" rows="2" placeholder="Enter a review:" required></textarea> 
             </div>
+            <!-- Mandatory field. Confirm if user purchased car from dealership-->
+            <div class="form-group">
+                <input type="checkbox" class="form-check-input" id="allow-purchase-information" name="allow-purchase-information">
+                <label for="allow-purchase-information" class="form-check-label">Purchased the vehicle from {{dealership.full_name}}?</label>
+            </div>
+            <fieldset id="purchase-information" disabled=>
+                <legend>Select purchased vehicle information below:</legend>
+                <!-- Ask user select a vehicle sold by this dealer. -->
+                <div class="form-group">
+                    <label for="car">Select vehicle (manufacturer: model--year):</label>
+                    <select class="form-select" id="car" name="car" required>
+                        {% for car in cars %}
+                            <option selected value={{car.id}}>{{car.car_make.name}}: {{car.name}}--{{ car.year|date:"Y" }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Ask user input the purchased date of vehicle -->
+                <div class="form-group">
+                    <label for="purchase_date">Purchase Date:</label>
+                    <input type="text" class="date-own form-control" id="purchase-date" name="purchase_date"  placeholder="Enter purchase date:"   required>
+                </div>
+            </fieldset>
             <input class="btn btn-success btn-block" type="submit" value="Submit">
         </form>
         {% else %}
@@ -86,9 +95,19 @@
        format: 'mm/dd/yyyy'
      });
 
-    function isChecked() {
-            var x = document.getElementById("purchasedVehicle").checked;
-            document.getElementById("purchasedInfo").disabled = !x
-    }
+
+    // source [https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/disabled]:
+    var allowPurchaseInfoCheckbox = document.getElementById("allow-purchase-information");
+    var purchaseInformation = document.getElementById("purchase-information");
+
+    allowPurchaseInfoCheckbox.addEventListener("change", function(event) {
+        if (event.target.checked) {
+            purchaseInformation.disabled = false;
+        } else {
+            purchaseInformation.disabled = true;
+        }
+    }, false);
+
+
 </script>
 </html>

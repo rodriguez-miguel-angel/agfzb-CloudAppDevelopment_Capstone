@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .models import CarModel
+from .models import CarModel, CarDealer
 # from .restapis import related methods
 from .restapis import get_dealers_from_cf, get_dealer_by_id, get_dealer_reviews_from_cf, post_request
 
@@ -19,6 +19,9 @@ import json
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+
+# global 
+counter = 10
 
 # Create your views here.
 
@@ -120,8 +123,12 @@ def get_dealer_details(request, dealer_id):
         dealer_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/dealership"
         review_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/review"
         # Get dealer from the URL and dealer_id
-        dealer = get_dealer_by_id(dealer_url, dealer_id)
+        dealer = get_dealer_by_id(dealer_url, dealer_id)[0]
         context['dealership'] = dealer
+
+        print("dealer[get_dealer_details in views]:", dealer)
+        print("dealer.id [get_dealer_details in views]:", dealer.id)
+
 
         # Get reviews from the dealer
         reviews = get_dealer_reviews_from_cf(review_url, dealer_id=dealer_id)
@@ -138,11 +145,29 @@ def add_review(request, dealer_id):
     # Get user object, then check if user is authenticated because only authenticated users can post reviews for a dealer
     user = request.user
     if(user.is_authenticated):
-        if request.method == "GET" :
-            #url = "your-cloud-function-domain/dealerships/dealer-get"
-            dealer_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/dealership"
-            dealer = get_dealer_by_id(dealer_url, dealer_id)
-            context['dealership'] = dealer
+
+        print("request[add_review]", request) 
+        print()
+        print("dealer_id[add_review]", dealer_id)
+        print()
+
+
+        #url = "your-cloud-function-domain/dealerships/dealer-get"
+        dealer_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/dealership"
+        review_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/review"
+        # Get dealer from the URL and dealer_id
+        dealer = get_dealer_by_id(dealer_url, dealer_id=dealer_id)[0]
+        context['dealership'] = dealer
+
+        print("dealer[add_review in views.py]:", dealer)
+        print()
+        print("dealer.id [add_review in views.py]:", dealer.id)
+
+        #print("dealer[add_review]", dealer)
+        print()
+        
+
+        if request.method == "GET" :            
             cars = CarModel.objects.all()
             
             print("cars",cars)
@@ -151,8 +176,9 @@ def add_review(request, dealer_id):
             context['cars'] = cars
 
             return render(request, 'djangoapp/add_review.html', context)
+            #return HttpResponseRedirect(reverse(viewname='djangoapp:dealer_details.html', args=(dealer.id)))
 
-        elif request.method == "POST":
+        if request.method == "POST":
             #url = "your-cloud-function-domain/dealerships/dealer-get"
             review_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/review"
             # Get json payload from the request
@@ -162,20 +188,38 @@ def add_review(request, dealer_id):
             '''
             review = {}
             review["time"] = datetime.utcnow().isoformat()
-            review["dealership"] = dealer_id
-            review["review"] = request.POST['review']
-
-            review["name"] = request.POST['name']
-            purchase = request.POST['purchase']
-            if purchase:
-                review["purchase"] = purchase
-                review["purchase_date"] = request.POST['purchase_date']
-                review["car_make"] = request.POST['car_make']
-                review["car_model"] = request.POST['car_model']
-                review["car_year"] = request.POST['car_year']
-            else:
-                review["purchase"] = purchase
             
+            global counter
+            counter += 1
+            review['id'] = counter
+            print("counter: ", counter)
+
+            name = user.first_name + ' ' + user.last_name
+            review["name"] = name    
+            review["dealership"] = dealer_id
+            review["review"] = request.POST['content']
+
+            # create and initialize purchase
+            purchase = False
+            print("request.POST:", request.POST)
+
+            if "allow-purchase-information" in request.POST:
+                if request.POST["allow-purchase-information"] == 'on':
+                    purchase = True
+                else: 
+                    purchase = False
+            
+            print("purchase [add_review in views.py]", purchase)
+            review["purchase"] = purchase
+
+            if purchase:                
+                review["purchase_date"] = request.POST['purchase_date']
+                car_id = request.POST['car']
+                car = CarModel.objects.get(pk=car_id)
+                review["car_make"] = car.car_make.name
+                review["car_model"] = car.name
+                review["car_year"] = car.year.strftime("%Y")
+
 
             '''
             Create another dictionary object called json_payload with one key called review. 
@@ -186,14 +230,11 @@ def add_review(request, dealer_id):
 
             result = post_request(review_url, json_payload, dealer_id=dealer_id)
 
-            print("add_review[views.py]: ", result)
+            print("result[add_review in views.py]: ", result)
             context['result'] = result
             context['message'] = "Success: Review added."
-            #return redirect(request, 'djangoapp/dealer_details.html', context)
-            #return HttpResponseRedirect(reverse(viewname='djangoapp:dealer_details.html', args=(dealer_id)))
-            #return redirect(request, 'djangoapp/dealer_details.html', context)
             # Redirect to dealer_details with the dealer id
-            return HttpResponseRedirect(reverse(viewname='djangoapp:dealer_details.html', args=(dealer_id, dealer.id)))
+            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)    
     else:
         '''
         version-01:
@@ -204,6 +245,6 @@ def add_review(request, dealer_id):
         version-02:
         '''
         context['message'] = "Error: User is unauthenticated."
-        return redirect(request, 'djangoapp/dealer_details.html', context)
+        return render(request, 'djangoapp/add_review.html', context)
         
         

@@ -18,23 +18,28 @@ def main(dict):
     
     service.set_service_url(dict["COUCH_URL"])
 
+    
+    '''
     # version-01 [https://github.com/IBM/cloudant-python-sdk/blob/master/examples/postDocument/example_request.py]:
     try:
-        reviews_doc = Document(
-            name = dict["name"],
+        reviews_doc = Document( 
+            id = dict["id"],
+            name = dict["name"]
             dealership = dict["dealership"],
             review = dict["review"],
             purchase = dict["purchase"],
             purchase_date = dict["purchase_date"],
             car_make = dict["car_make"],
             car_model = dict["car_model"],
-            car_year = dict["car_year"])
+            car_year = dict["car_year"]
+        )
         
         response = service.post_document(db=databaseName, document=reviews_doc).get_result()
         
         result= {
             'headers': {'Content-Type':'application/json'}, 
-            'body': {'data':response} 
+            'body': {'data':response},
+            'message': 'cloud_function_success: post_review' 
         }        
         
         return result
@@ -42,7 +47,30 @@ def main(dict):
     except:
         return {
             'statusCode': 404,
-            'message': 'function_error: post_review'
+            'message': 'cloud_function_error: post_review'
         }
 
+    
+    '''
+    '''
+    # version-02:
+    '''
+    try:
+        review_doc = dict["review"]
+        
+        response = service.post_document(db=databaseName, document=review_doc).get_result()
+        
+        result= {
+            'headers': {'Content-Type':'application/json'}, 
+            'body': {'data':response},
+            'message': 'cloud_function_success: post_review' 
+        }        
+        
+        return result
+        
+    except:
+        return {
+            'statusCode': 404,
+            'message': 'cloud_function_error: post_review'
+        }
     

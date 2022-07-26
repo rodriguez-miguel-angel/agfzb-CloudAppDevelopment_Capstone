@@ -19,11 +19,11 @@
                 <li class="nav-item active"><a class="nav-link" href="{% url 'djangoapp:index' %}">Home</a></li>
                 
                 {% if user.is_authenticated %}
-                    {#%  scenario-01: 
-                        <!-- <li class="nav-item"><a class="nav-link" href="#">Add Review</a></li> -->
-                         %#}
+                    <!-- scenario-01: 
+                        <li class="nav-item"><a class="nav-link" href="#">Add Review</a></li> -->
+                
                     {#%  scenario-02: %#}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'djangoapp:add_review' dealership.dealer_id %}">Add Review</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'djangoapp:add_review' dealership.id %}">Add Review</a></li>
 
                 {% endif %}
 
