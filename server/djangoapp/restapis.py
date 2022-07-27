@@ -239,6 +239,7 @@ def analyze_review_sentiments(dealer_review):
     '''
     response = natural_language_understanding.analyze(
         text=dealer_review,
+        language='en',
         features=Features(
         sentiment=SentimentOptions(),
         entities=EntitiesOptions(emotion=True, sentiment=True, limit=2),
