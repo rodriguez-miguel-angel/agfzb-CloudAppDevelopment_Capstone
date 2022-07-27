@@ -126,10 +126,6 @@ def get_dealer_details(request, dealer_id):
         dealer = get_dealer_by_id(dealer_url, dealer_id)[0]
         context['dealership'] = dealer
 
-        print("dealer[get_dealer_details in views]:", dealer)
-        print("dealer.id [get_dealer_details in views]:", dealer.id)
-
-
         # Get reviews from the dealer
         reviews = get_dealer_reviews_from_cf(review_url, dealer_id=dealer_id)
         context['review_list'] = reviews
@@ -146,37 +142,19 @@ def add_review(request, dealer_id):
     user = request.user
     if(user.is_authenticated):
 
-        print("request[add_review]", request) 
-        print()
-        print("dealer_id[add_review]", dealer_id)
-        print()
-
-
         #url = "your-cloud-function-domain/dealerships/dealer-get"
         dealer_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/dealership"
         review_url = "https://33a5508d.us-south.apigw.appdomain.cloud/api/review"
         # Get dealer from the URL and dealer_id
         dealer = get_dealer_by_id(dealer_url, dealer_id=dealer_id)[0]
         context['dealership'] = dealer
-
-        print("dealer[add_review in views.py]:", dealer)
-        print()
-        print("dealer.id [add_review in views.py]:", dealer.id)
-
-        #print("dealer[add_review]", dealer)
-        print()
         
-
         if request.method == "GET" :            
             cars = CarModel.objects.all()
-            
-            print("cars",cars)
-            # car = get_object_or_404(CarModel, pk=car_id)
-            
+                        
             context['cars'] = cars
 
             return render(request, 'djangoapp/add_review.html', context)
-            #return HttpResponseRedirect(reverse(viewname='djangoapp:dealer_details.html', args=(dealer.id)))
 
         if request.method == "POST":
             #url = "your-cloud-function-domain/dealerships/dealer-get"
@@ -201,7 +179,6 @@ def add_review(request, dealer_id):
 
             # create and initialize purchase
             purchase = False
-            print("request.POST:", request.POST)
 
             if "allow-purchase-information" in request.POST:
                 if request.POST["allow-purchase-information"] == 'on':
@@ -209,7 +186,6 @@ def add_review(request, dealer_id):
                 else: 
                     purchase = False
             
-            print("purchase [add_review in views.py]", purchase)
             review["purchase"] = purchase
 
             if purchase:                
@@ -230,7 +206,7 @@ def add_review(request, dealer_id):
 
             result = post_request(review_url, json_payload, dealer_id=dealer_id)
 
-            print("result[add_review in views.py]: ", result)
+
             context['result'] = result
             context['message'] = "Success: Review added."
             # Redirect to dealer_details with the dealer id

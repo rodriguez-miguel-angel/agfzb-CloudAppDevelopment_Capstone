@@ -118,20 +118,13 @@ def get_dealers_from_cf(url, **kwargs):
 # - Parse JSON results into a CarDealer object list
 def get_dealer_by_id(url, dealer_id):
     result = []
-    print("dealer_id[get_dealer_by_id in restapis]", dealer_id)
     json_result = get_request(url, id=dealer_id)
     
     if json_result:
         # Get the row list in JSON as dealer
-        print("json_result['docs'] [get_dealer_by_id in restapis]", json_result["docs"])
-
         dealer = json_result["docs"]
         # Get its content in `doc` object
         dealer_doc = dealer[0]
-
-
-        print("dealer_doc [get_dealer_by_id in restapis]:")
-        print(dealer_doc)
 
         # Create a CarDealer object with values in `dealer_doc` object
         '''
@@ -141,15 +134,6 @@ def get_dealer_by_id(url, dealer_id):
                                    id=dealer_doc["id"], lat=dealer_doc["lat"], long=dealer_doc["long"],
                                    short_name=dealer_doc["short_name"], st=dealer_doc["st"], state=dealer_doc["state"],
                                    zip=dealer_doc["zip"])
-
-
-        print("dealer_obj:")
-        print(dealer_obj)
-
-        print("dealer_obj.id:", dealer_obj.id)
-        print()
-
-        print("dealer_id", dealer_id)
 
         result.append(dealer_obj)
 
@@ -168,13 +152,9 @@ def get_dealer_reviews_from_cf(url, **kwargs):
     # Call get_request with a URL parameter
     json_result = get_request(url, dealer_id=dealer_id)
     
-    print("json_result[get_dealer_reviews_from_cf in restapis.py]", json_result)
-
     if json_result:
         # Get the row list in JSON as reviews
         reviews = json_result["body"]["data"]["docs"]
-
-        print("reviews", reviews)
 
         # For each review object
         for review in reviews:
@@ -253,8 +233,6 @@ def analyze_review_sentiments(dealer_review):
     return sentiment
 
 def post_request(url, json_payload, **kwargs):
-    print("kwargs [post_request in restapis.py]", kwargs)
-    print("json_payload [post_request in restapis.py]", json_payload)
     print("POST from {} ".format(url))
     try:
         response = requests.post(url, headers={'Content-Type': 'application/json'}, params=kwargs, json=json_payload)
@@ -265,18 +243,6 @@ def post_request(url, json_payload, **kwargs):
     
     status_code = response.status_code
     print("With status {} ".format(status_code))
-
-    print(" -------------------------------------------------------------------------------------- ")
-
-    print("response.content [post_request in restapis]: ", response.content)
-    print("response.headers [post_request in restapis]: ", response.headers)
-
     json_data = json.loads(response.text)
-    print("json_data [post_request in restapis.py]:")
-    print("json_data [post_request in restapis.py]: ", json_data)
-
-
-
-    print(" -------------------------------------------------------------------------------------- ")
 
     return json_data
