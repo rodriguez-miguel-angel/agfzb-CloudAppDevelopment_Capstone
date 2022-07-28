@@ -38,7 +38,7 @@ DEBUG = True
 
 APPEND_SLASH = True
 
-ALLOWED_HOSTS = ["localhost", "localhost:8000", "${HOST}.${DOMAIN}", "ca-north.us-south.cf.appdomain.cloud", "rodriguezmi1-8000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai", "https://rodriguezmi1-8000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai", "https://*.127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "localhost:8000", "${HOST}.${DOMAIN}", "ca-north.us-south.cf.appdomain.cloud", "rodriguezmi1-8000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai", "https://rodriguezmi1-8000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai"]
 
 
 # Application definition
@@ -143,4 +143,6 @@ MEDIA_URL = '/media/'
 SENTIMENT_API_KEY='MOC6YNcKV-xSIprjCt-l5D4BVMeMtip1HwyU2KHYIbMO'
 SENTIMENT_API_URL='https://api.us-south.natural-language-understanding.watson.cloud.ibm.com/instances/2471badd-faf9-44d2-8262-21a3e3e21244'
 
-CSRF_TRUSTED_ORIGINS = ['https://rodriguezmi1-8000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai', 'https://ca-north.us-south.cf.appdomain.cloud', 'https://*.127.0.0.1']
+CSRF_COOKIE_DOMAIN = 'us-south.cf.appdomain.cloud'
+
+CSRF_TRUSTED_ORIGINS = ['https://rodriguezmi1-8000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai', 'rodriguezmi1-8000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai', 'https://ca-north.us-south.cf.appdomain.cloud']
